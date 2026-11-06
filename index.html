@@ -1,4 +1,4 @@
-<title>History Heroes</title>
+<title>History Heroes (Classroom)</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
@@ -53,6 +53,8 @@ button{cursor:pointer}
 #acts .actb.threat{background:var(--bad);border-color:var(--bad)}
 #acts .actb.spook{background:#B9A2F2;border-color:#B9A2F2;color:#1C1030}
 #acts .actb:disabled{opacity:.55;cursor:default}
+.actb .kb{display:none;font:700 .72rem/1 var(--f-body,inherit);background:rgba(0,0,0,.22);border:1px solid rgba(0,0,0,.3);border-radius:5px;padding:3px 6px;margin-right:8px;vertical-align:2px}
+@media (hover:hover) and (pointer:fine){ #acts{pointer-events:none} #acts .actb{box-shadow:0 4px 12px rgba(0,0,0,.3)} .actb .kb{display:inline-block} }
 .pips.spirit i.on{background:#B9A2F2}
 #dock{position:absolute;z-index:8;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 24px));color:#21180C;border-radius:8px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.45);max-height:62%;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
 #dock.gather{background:#E6EEF8;border:2px solid #8FB0DA}
@@ -267,7 +269,7 @@ body.menu .screen{position:relative;inset:auto;overflow:visible;min-height:100%}
         <p class="lede err" id="joinErr" style="font-size:.85rem;margin:0" aria-live="polite"></p>
         <div><button class="linkish" id="hostBtn">Teachers: host a class game on this screen</button></div>
       </fieldset>
-      <p class="lede" style="font-size:.8rem">Move with the arrow keys, WASD, the joystick, or by tapping the map. Answer with 1–4 or a tap.</p>
+      <p class="lede" style="font-size:.8rem">On a computer: move with the arrow keys or WASD and press <b>Space</b> to challenge the nearest rival (if they’re close, you’ll chase them down). <b>E</b> enters a trial; answer with 1–4. On a phone or tablet: steer with the joystick, or <b>tap a rival</b> and your hero chases and challenges them.</p>
     </div>
   </section>
 
@@ -296,7 +298,6 @@ const ERAS=[
 ];
 // subjects that live in the question pool but not on the map
 const TOPICS=[
- {id:'bahai', name:'Bahá’í History', years:'1817–today', region:'', landmark:''}
 ];
 const CATS=[...ERAS,...TOPICS];
 const TERMS=[
@@ -441,46 +442,7 @@ const TERMS=[
  ['cold','Cuban Missile Crisis','1962 standoff over Soviet nuclear weapons placed 90 miles from Florida'],
  ['cold','Space Race','Competition to reach orbit and the Moon that began with Sputnik in 1957'],
  ['cold','Détente','Easing of tensions between the superpowers in the 1970s'],
- ['cold','Collapse of the Soviet Union','Breakup of the USSR into 15 independent countries in 1991'],
- ['bahai','Bahá’u’lláh','Founder of the Bahá’í Faith, whose name means “the Glory of God”'],
- ['bahai','The Báb','The Herald who prepared the way for Bahá’u’lláh; His title means “the Gate”'],
- ['bahai','‘Abdu’l-Bahá','Eldest son of Bahá’u’lláh, Center of His Covenant and perfect example of His teachings'],
- ['bahai','Shoghi Effendi','Grandson of ‘Abdu’l-Bahá, appointed as Guardian of the Bahá’í Faith'],
- ['bahai','Universal House of Justice','Nine-member body elected to guide the Bahá’í world, first elected in 1963'],
- ['bahai','Bahíyyih Khánum','Daughter of Bahá’u’lláh, known as the Greatest Holy Leaf'],
- ['bahai','Navváb','Wife of Bahá’u’lláh and mother of ‘Abdu’l-Bahá, called the Most Exalted Leaf'],
- ['bahai','Mullá Ḥusayn','The first person to recognize the Báb as a Messenger of God'],
- ['bahai','Letters of the Living','The Báb’s first eighteen followers'],
- ['bahai','Ṭáhirih','Poet and Letter of the Living who courageously championed the equality of women and men'],
- ['bahai','Quddús','The last of the Letters of the Living, honored as the foremost among them'],
- ['bahai','Declaration of the Báb','Evening in May 1844 when the Báb announced His mission to Mullá Ḥusayn in Shiraz'],
- ['bahai','Shiraz','City in Persia where the Báb was born and declared His mission'],
- ['bahai','Tehran','Capital of Persia, where Bahá’u’lláh was born in 1817'],
- ['bahai','Síyáh-Chál','Underground dungeon in Tehran, the “Black Pit,” where Bahá’u’lláh was imprisoned in 1852'],
- ['bahai','Baghdad','City where Bahá’u’lláh lived in exile for ten years, from 1853 to 1863'],
- ['bahai','Garden of Riḍván','Garden in Baghdad where Bahá’u’lláh declared His mission in 1863'],
- ['bahai','Festival of Riḍván','Twelve-day holy period each spring celebrating Bahá’u’lláh’s declaration'],
- ['bahai','‘Akká','Prison city in the Holy Land where Bahá’u’lláh was sent as a prisoner in 1868'],
- ['bahai','Bahjí','Mansion near ‘Akká where Bahá’u’lláh passed away and where His Shrine stands'],
- ['bahai','Martyrdom of the Báb','His execution by a firing squad in Tabriz on 9 July 1850'],
- ['bahai','Shrine of the Báb','Golden-domed resting place of the Báb’s remains on Mount Carmel'],
- ['bahai','Mount Carmel','Mountain in Haifa that is home to the Shrine of the Báb and the Bahá’í World Centre'],
- ['bahai','Kitáb-i-Aqdas','The Most Holy Book, Bahá’u’lláh’s book of laws'],
- ['bahai','Hidden Words','Short verses in Arabic and Persian revealed by Bahá’u’lláh, often memorized by children'],
- ['bahai','Kitáb-i-Íqán','The Book of Certitude, which explains how God has sent His Messengers one after another'],
- ['bahai','Manifestation of God','A Messenger, such as Abraham, Moses, Buddha, Jesus, Muhammad or Bahá’u’lláh, who reveals God’s Word'],
- ['bahai','Progressive revelation','The teaching that God sends Messengers age after age to guide humanity'],
- ['bahai','Oneness of humanity','The central teaching that all people are members of one human family'],
- ['bahai','Covenant','Bahá’u’lláh’s promise that keeps the Faith united by naming who would lead after Him'],
- ['bahai','Nineteen Day Feast','Community gathering at the start of each Bahá’í month for prayer, consultation and fellowship'],
- ['bahai','Naw-Rúz','The Bahá’í New Year, celebrated at the spring equinox'],
- ['bahai','The Fast','Nineteen days each March when Bahá’ís do not eat or drink from sunrise to sunset'],
- ['bahai','Alláh-u-Abhá','The Greatest Name, a greeting that means “God is Most Glorious”'],
- ['bahai','Mashriqu’l-Adhkár','Bahá’í House of Worship, open to all, whose name means “Dawning-place of the Praise of God”'],
- ['bahai','Spiritual Assembly','Nine-member council elected each Riḍván to serve a Bahá’í community'],
- ['bahai','Tablets of the Divine Plan','Letters from ‘Abdu’l-Bahá calling Bahá’ís to share the Faith in every land'],
- ['bahai','‘Abdu’l-Bahá’s journeys to the West','His travels through Europe and North America from 1911 to 1913'],
- ['bahai','Consultation','Discussing a question frankly and lovingly to find the best answer together']
+ ['cold','Collapse of the Soviet Union','Breakup of the USSR into 15 independent countries in 1991']
 ];
 
 (()=>{
@@ -636,6 +598,7 @@ function buildKneel(look){
 }
 
 const settings=Object.assign({name:'',costume:'painter',cloth:'#D94F3D',skin:'#E3B184',hair:'#2B1B10',rivals:8,skill:'scholar',minutes:8,eras:ERAS.map(e=>e.id)},store.get('hh-settings',{}));
+{ const ok=(settings.eras||[]).filter(id=>ERA_BY_ID[id]); settings.eras=ok.length||!(settings.eras||[]).length?ok:ERAS.map(e=>e.id); }
 const mastery=store.get('hh-mastery',{});   // term -> {s:seen,c:correct,m:misses}
 const SKILL={apprentice:{acc:.55,t:[5,10]},scholar:{acc:.7,t:[3.5,8]},master:{acc:.85,t:[2.5,6]}};
 
@@ -849,13 +812,15 @@ function maxEnergy(h){return Math.min(9,3+Math.floor(h.power/40))}
 
 /* ---------- camera & input ---------- */
 const cam={x:MW/2,y:MH/2,z:56};
-const keys=new Set(); let stick={x:0,y:0}, tapTarget=null;
+const keys=new Set(); let stick={x:0,y:0}, tapTarget=null, lock=null;
 addEventListener('keydown',e=>{
   if(!$('#modal').hidden){ modalKey(e); return; }
   if(e.target.matches('input')) return;
-  const k=e.key.toLowerCase(); if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)){keys.add(k);tapTarget=null;e.preventDefault()}
+  const k=e.key.toLowerCase(); if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)){keys.add(k);tapTarget=null;lock=null;e.preventDefault()}
   if(dock&&/^[1-4]$/.test(e.key)){ dockPick(+e.key-1); return; }
-  if(k==='e'||k===' '||k==='enter'){ const b=$('#acts .actb:not(:disabled)'); if(b){ b.click(); e.preventDefault(); } }
+  if(e.repeat||!G||G.over||$('#hudL').hidden) return;
+  if(k===' '&&G&&!G.over&&G.me.alive&&!G.possession&&!dock){ e.preventDefault(); keyChallenge(); return; }
+  const a=curActs.find(x=>x.key===k&&!x.dis); if(a){ e.preventDefault(); a.fn(); actsKey=null; }
 });
 addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 addEventListener('blur',()=>keys.clear());
@@ -864,8 +829,24 @@ pad.addEventListener('pointerdown',e=>{pad.setPointerCapture(e.pointerId);padMov
 pad.addEventListener('pointermove',e=>{if(pad.hasPointerCapture(e.pointerId))padMove(e)});
 const padEnd=()=>{stick={x:0,y:0};knob.style.transform=''};
 pad.addEventListener('pointerup',padEnd);pad.addEventListener('pointercancel',padEnd);
-function padMove(e){const r=pad.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const L=Math.hypot(dx,dy),max=r.width/2-12;if(L>max){dx*=max/L;dy*=max/L}stick={x:dx/max,y:dy/max};tapTarget=null;knob.style.transform=`translate(${dx}px,${dy}px)`}
-cv.addEventListener('pointerdown',e=>{ if(!G||G.paused||G.over) return; const w=screenToWorld(e.clientX,e.clientY); tapTarget=w; });
+function padMove(e){const r=pad.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const L=Math.hypot(dx,dy),max=r.width/2-12;if(L>max){dx*=max/L;dy*=max/L}stick={x:dx/max,y:dy/max};tapTarget=null;lock=null;knob.style.transform=`translate(${dx}px,${dy}px)`}
+// the mouse doesn't steer: computers play with the keyboard, touch screens tap
+cv.addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse'||!G||(MODE==='solo'&&G.paused)||G.over||titleShowing()||MODE==='host') return;
+  const me=G.me, foe=me.alive&&!G.possession?rivalAt(e.clientX,e.clientY):null;
+  if(foe){ lock=foe; tapTarget=null; SFX.tap&&SFX.tap(); popup(foe.x,foe.y-.2,dist(foe,me)<1.8?'Challenge!':'Chasing!','#F2D16B'); return; }
+  lock=null; tapTarget=screenToWorld(e.clientX,e.clientY); });
+function rivalAt(sx,sy){ let best=null,bd=1e9; const r=Math.max(46,cam.z*.9);
+  for(const h of G.heroes){ if(h.me||!h.alive||!canSee(h)) continue; const hx=VW/2+(h.x-cam.x)*cam.z, hy=VH/2+(h.y-cam.y)*cam.z-cam.z*.35, d=Math.hypot(sx-hx,sy-hy); if(d<r&&d<bd){ bd=d; best=h; } }
+  return best; }
+// Space: challenge the nearest rival, or chase one who is a few steps away
+function keyChallenge(){ const me=G.me, foes=G.heroes.filter(h=>!h.me&&h.alive&&canSee(h)&&dist(h,me)<5).sort((a,b)=>dist(a,me)-dist(b,me)), f=foes[0];
+  if(!f){ popup(me.x,me.y-.3,'No rival nearby','#EFE6CF'); return; }
+  if(dist(f,me)<1.8){ lock=null; startDuel(f,true); } else { lock=f; tapTarget=null; popup(f.x,f.y-.2,'Chasing!','#F2D16B'); } }
+// steer toward a locked-on rival and challenge on arrival
+function lockSteer(me){ const t=lock; if(!t) return null;
+  if(!me.alive||G.possession||!t.alive||!canSee(t)||dist(t,me)>9||t.duel||t.duelFlag){ lock=null; return null; }
+  if(dist(t,me)<1.5){ lock=null; startDuel(t,true); return null; }
+  return {x:t.x-me.x,y:t.y-me.y}; }
 function screenToWorld(sx,sy){return{x:cam.x+(sx-VW/2)/cam.z,y:cam.y+(sy-VH/2)/cam.z}}
 
 /* ---------- movement ---------- */
@@ -905,6 +886,7 @@ function update(dt){
   if(keys.has('arrowleft')||keys.has('a'))dx--; if(keys.has('arrowright')||keys.has('d'))dx++;
   if(keys.has('arrowup')||keys.has('w'))dy--; if(keys.has('arrowdown')||keys.has('s'))dy++;
   if(!dx&&!dy){dx=stick.x;dy=stick.y}
+  if(!dx&&!dy&&lock){ const ls=lockSteer(me); if(ls){dx=ls.x;dy=ls.y} if(!$('#modal').hidden) return; }
   if(!dx&&!dy&&tapTarget){const ddx=tapTarget.x-me.x,ddy=tapTarget.y-me.y;if(Math.hypot(ddx,ddy)<.15)tapTarget=null;else{dx=ddx;dy=ddy}}
   if(me.alive){
     if(G.possession){ const p=G.possession; p.t-=dt; const tg=possessTarget(); moveHero(me,tg.x-me.x,tg.y-me.y,dt*.85); if(p.t<=0) releasePossession(false); }
@@ -1068,6 +1050,7 @@ function draw(t){
     const ph=(MODE==='host'?Math.max(z,30):z)*.072, sw=16*ph, sh=19*ph, feet=y+z*.38;
     ctx.fillStyle='rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(x,feet,sw*.33,sw*.11,0,0,7); ctx.fill();
     if((h.me&&G.possession)||h.possessed||h.possessedBy||h.poss){ ctx.fillStyle=`rgba(170,120,255,${(.22+.14*Math.sin(t*6)).toFixed(3)})`; ctx.beginPath(); ctx.ellipse(x,feet-sh*.45,sw*.62,sh*.64,0,0,7); ctx.fill(); }
+    if(h===lock){ ctx.save(); ctx.strokeStyle=h.power>G.me.power?'#EE7A66':'#F2D16B'; ctx.lineWidth=3; ctx.setLineDash([7,6]); ctx.lineDashOffset=-t*30; ctx.beginPath(); ctx.ellipse(x,feet,sw*.62,sw*.22,0,0,7); ctx.stroke(); ctx.restore(); }
     if(h.me){ ctx.strokeStyle=`rgba(242,209,107,${(.55+.25*Math.sin(t*4)).toFixed(3)})`; ctx.lineWidth=2.5; ctx.beginPath(); ctx.ellipse(x,feet,sw*.48,sw*.17,0,0,7); ctx.stroke(); }
     if(!(h.flash>0&&Math.floor(t*18)%2)){
       const fr=h.moving?(Math.floor(t*9+h.id)%2?h.spr.w1:h.spr.w2):h.spr.idle;
@@ -1079,6 +1062,8 @@ function draw(t){
     ctx.fillStyle=h.me?'#F2D16B':threat?'#EE7A66':'#EFE6CF'; ctx.fillText(tag,x,ty);
     if(h===leader){ const cx=x-tw/2-6-z*.2, cy=ty-z*.1, u=z*.045; ctx.fillStyle='#F2C94C'; ctx.strokeStyle='#1A1208'; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.moveTo(cx-3*u,cy+2*u); ctx.lineTo(cx-3*u,cy-2*u); ctx.lineTo(cx-1.5*u,cy); ctx.lineTo(cx,cy-3*u); ctx.lineTo(cx+1.5*u,cy); ctx.lineTo(cx+3*u,cy-2*u); ctx.lineTo(cx+3*u,cy+2*u); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    if(!h.me&&MODE!=='host'&&G.me.alive&&!G.possession&&(h===lock||dist(h,G.me)<1.8)){ const sx=x+tw/2+6+z*.2, sy=ty-z*.1, u=z*.05; ctx.save(); ctx.translate(sx,sy); ctx.lineWidth=Math.max(2,u*.9); ctx.lineCap='round'; ctx.strokeStyle='#1A1208';
+      for(const sg of [1,-1]){ ctx.beginPath(); ctx.moveTo(-3*u*sg,3*u); ctx.lineTo(3*u*sg,-3*u); ctx.stroke(); } ctx.strokeStyle='#F2D16B'; ctx.lineWidth=Math.max(1.2,u*.5); for(const sg of [1,-1]){ ctx.beginPath(); ctx.moveTo(-3*u*sg,3*u); ctx.lineTo(3*u*sg,-3*u); ctx.stroke(); } ctx.restore(); }
     if(h.me){ const ay=ty-z*.42+Math.sin(t*5)*3; ctx.fillStyle='#F2D16B'; ctx.beginPath(); ctx.moveTo(x-z*.12,ay-z*.14); ctx.lineTo(x+z*.12,ay-z*.14); ctx.lineTo(x,ay); ctx.closePath(); ctx.fill(); }
     const me=maxEnergy(h); for(let i=0;i<me;i++){ ctx.fillStyle=i<h.energy?'#79D19C':'rgba(255,255,255,.2)'; ctx.fillRect(x-me*4.5+i*9,feet+5,7,4); }
     if(h.say){ ctx.font=`700 ${Math.max(11,Math.round(z*.22))}px "Atkinson Hyperlegible", sans-serif`; const bw=ctx.measureText(h.say.text).width+16, bx=x-bw/2, byy=ty-z*.95;
@@ -1273,21 +1258,21 @@ function hudTick(){
   if(me.alive&&!G.possession){
     const near=G.heroes.filter(h=>!h.me&&h.alive&&dist(h,me)<1.8).sort((a,b)=>dist(a,me)-dist(b,me))[0];
     const mark=G.marks.find(m=>settings.eras.includes(m.era)&&!me.trials.has(m.era)&&Math.hypot(m.x-me.x,m.y-me.y)<1.3);
-    if(near) acts.push({k:'c'+near.id+near.power,label:`Challenge ${near.name}`,small:`Their power ${near.power} · yours ${me.power}`,cls:near.power>me.power?'threat':'',fn:()=>startDuel(near,true)});
-    else if(mark) acts.push({k:'m'+mark.era,label:'Enter the trial',small:`${ERA_BY_ID[mark.era].landmark} · 3 questions`,fn:()=>openTrial(mark)});
+    if(near) acts.push({k:'c'+near.id+near.power,key:' ',kb:'Space',label:`Challenge ${near.name}`,small:`Their power ${near.power} · yours ${me.power}`,cls:near.power>me.power?'threat':'',fn:()=>startDuel(near,true)});
+    else if(mark) acts.push({k:'m'+mark.era,key:'e',kb:'E',label:'Enter the trial',small:`${ERA_BY_ID[mark.era].landmark} · 3 questions`,fn:()=>openTrial(mark)});
   } else if(!me.alive&&G.ghostMode){
     if(G.inhabit){ const host=G.inhabit.host, other=G.heroes.filter(h=>h.alive&&h!==host&&dist(h,host)<1.7)[0];
-      if(other) acts.push({k:'fd'+other.id,label:`Make ${host.name} duel ${other.name}`,small:`Power ${host.power} vs ${other.power}`,cls:'spook',fn:()=>forceDuel(other)});
-      acts.push({k:'rel',label:'Release your host',small:'Return to ghost form',cls:'spook',fn:()=>endInhabit('release')}); }
+      if(other) acts.push({k:'fd'+other.id,key:' ',kb:'Space',label:`Make ${host.name} duel ${other.name}`,small:`Power ${host.power} vs ${other.power}`,cls:'spook',fn:()=>forceDuel(other)});
+      acts.push({k:'rel',key:'e',kb:'E',label:'Release your host',small:'Return to ghost form',cls:'spook',fn:()=>endInhabit('release')}); }
     else { const tgt=G.heroes.filter(h=>h.alive&&!h.possessedBy&&dist(h,me)<2).sort((a,b)=>dist(a,me)-dist(b,me))[0];
-      if(tgt){ acts.push({k:'h'+tgt.id+(spirit>=3),label:`Haunt ${tgt.name}`,small:spirit>=3?'3 spirit · drains 1 energy':`Needs 3 spirit (you have ${spirit})`,cls:'spook',dis:spirit<3,fn:()=>playerHaunt(tgt)});
-        acts.push({k:'i'+tgt.id+(spirit>=8),label:`Possess ${tgt.name}`,small:spirit>=8?'8 spirit · control them for 12s':'Needs 8 spirit',cls:'spook',dis:spirit<8||!!tgt.possessed,fn:()=>playerPossess(tgt)}); }
-      if(!dock) acts.push({k:'g',label:'Gather spirit',small:'Answer questions to grow stronger',cls:'spook',fn:()=>openDock('gather')}); } }
+      if(tgt){ acts.push({k:'h'+tgt.id+(spirit>=3),key:' ',kb:'Space',label:`Haunt ${tgt.name}`,small:spirit>=3?'3 spirit · drains 1 energy':`Needs 3 spirit (you have ${spirit})`,cls:'spook',dis:spirit<3,fn:()=>playerHaunt(tgt)});
+        acts.push({k:'i'+tgt.id+(spirit>=8),key:'e',kb:'E',label:`Possess ${tgt.name}`,small:spirit>=8?'8 spirit · control them for 12s':'Needs 8 spirit',cls:'spook',dis:spirit<8||!!tgt.possessed,fn:()=>playerPossess(tgt)}); }
+      if(!dock) acts.push({k:'g',key:'g',kb:'G',label:'Gather spirit',small:'Answer questions to grow stronger',cls:'spook',fn:()=>openDock('gather')}); } }
   renderActs(dock?[]:acts);
 }
-let actsKey=null;
-function renderActs(acts){ const k=acts.map(a=>a.k).join('|'); if(k===actsKey) return; actsKey=k; const box=$('#acts'); box.innerHTML='';
-  for(const a of acts){ const b=document.createElement('button'); b.className='actb '+(a.cls||''); b.disabled=!!a.dis; b.innerHTML=`${esc(a.label)}<small>${esc(a.small)}</small>`; b.onclick=()=>{ a.fn(); actsKey=null; }; box.appendChild(b); } }
+let actsKey=null, curActs=[];
+function renderActs(acts){ curActs=acts; const k=acts.map(a=>a.k).join('|'); if(k===actsKey) return; actsKey=k; const box=$('#acts'); box.innerHTML='';
+  for(const a of acts){ const b=document.createElement('button'); b.className='actb '+(a.cls||''); b.disabled=!!a.dis; b.innerHTML=`${a.kb?`<span class="kb">${a.kb}</span>`:''}${esc(a.label)}<small>${esc(a.small)}</small>`; b.onclick=()=>{ a.fn(); actsKey=null; }; box.appendChild(b); } }
 function addFeed(html){ if(MODE==='host') netAll({t:'feed',html}); const el=document.createElement('div'); el.innerHTML=html; const f=$('#feed'); f.appendChild(el); while(f.children.length>4) f.firstChild.remove(); setTimeout(()=>el.classList.add('old'),6000); setTimeout(()=>el.remove(),6800); }
 let bannerT=null;
 function showBanner(e){ $('#bannerEra').textContent=`${e.name} · ${e.years}`; $('#bannerName').textContent=e.region; const b=$('#banner'); b.classList.add('show'); clearTimeout(bannerT); bannerT=setTimeout(()=>b.classList.remove('show'),2600); }
@@ -1295,7 +1280,7 @@ function flashHurt(){ const v=$('#vignette'); v.classList.add('on'); setTimeout(
 
 /* ---------- sheets (study, trial, duel) ---------- */
 let modalKey=()=>{};
-function openSheet(html){ if(MODE==='solo') G.paused=true; keys.clear(); stick={x:0,y:0}; knob.style.transform=''; tapTarget=null; $('#sheet').innerHTML=html; $('#modal').hidden=false; }
+function openSheet(html){ if(MODE==='solo') G.paused=true; keys.clear(); stick={x:0,y:0}; knob.style.transform=''; tapTarget=null; lock=null; $('#sheet').innerHTML=html; $('#modal').hidden=false; }
 function closeSheet(){ $('#modal').hidden=true; modalKey=()=>{}; if(G&&!G.over) G.paused=false; }
 function optsHtml(q,hide=new Set()){ return `<div class="opts">${q.opts.map((o,i)=>`<button class="opt${hide.has(i)?' gone':''}" data-i="${i}" ${hide.has(i)?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o.label)}</span></button>`).join('')}</div>`; }
 function learnHtml(q){ return `<div class="learn"><b>${esc(q.t[1])}</b>: ${esc(q.t[2])}</div>`; }
@@ -1792,7 +1777,7 @@ function clientRecv(m){ if(!m||typeof m!=='object') return;
     case 'hurt': flashHurt(); SFX.hurt(); popup(me.x,me.y,'-1 energy','#EE7A66'); me.flash=.5; break;
     case 'haunted': me.flash=.6; SFX.haunt(); G.shake=8; flashHurt(); popup(me.x,me.y,'Haunted! -1','#C9A8FF'); addFeed(`The ghost of ${esc(m.by)} haunts you`); break;
     case 'hauntOk': SFX.haunt(); G.stats.haunts++; addFeed(`You haunted ${esc(m.name)}`); break;
-    case 'possessed': if(!$('#modal').hidden) closeSheet(); G.possession={by:{name:m.by},t:12,got:0,need:3}; SFX.possess(); G.shake=10; tapTarget=null; popup(me.x,me.y,'Possessed!','#C9A8FF'); addFeed(`The ghost of ${esc(m.by)} possesses you! Answer questions to break free.`); openDock('exorcise'); break;
+    case 'possessed': if(!$('#modal').hidden) closeSheet(); G.possession={by:{name:m.by},t:12,got:0,need:3}; SFX.possess(); G.shake=10; tapTarget=null; lock=null; popup(me.x,me.y,'Possessed!','#C9A8FF'); addFeed(`The ghost of ${esc(m.by)} possesses you! Answer questions to break free.`); openDock('exorcise'); break;
     case 'freed': { const p=G.possession; G.possession=null; if(dock&&dock.kind==='exorcise') closeDock(); if(m.ex){ SFX.win(); popup(me.x,me.y,'Exorcised! +10','#F2D16B'); spawn(me.x,me.y-.4,30,'#FFF4C8',3,1,.12,1); addFeed(`You cast out the ghost${p?` of ${esc(p.by.name)}`:''}! +10 power`); } else addFeed('The ghost lets you go'); break; }
     case 'inhabit': { const host=heroById(m.id); if(host){ G.inhabit={host,t:12}; G.stats.possessions++; SFX.possess(); addFeed(`You possess ${esc(host.name)}! Walk them into danger.`); } break; }
     case 'ie': if(G.inhabit){ const nm=G.inhabit.host.name; G.inhabit=null; addFeed(m.why==='expelled'?`${esc(nm)} drove you out!`:m.why==='fell'?'Your host has fallen':m.why==='time'?`Your hold on ${esc(nm)} fades`:'You release your host'); } break;
@@ -1844,6 +1829,7 @@ function updateClient(dt){
   if(keys.has('arrowleft')||keys.has('a'))dx--; if(keys.has('arrowright')||keys.has('d'))dx++;
   if(keys.has('arrowup')||keys.has('w'))dy--; if(keys.has('arrowdown')||keys.has('s'))dy++;
   if(!dx&&!dy){dx=stick.x;dy=stick.y}
+  if(!dx&&!dy&&lock&&me.alive){ const ls=lockSteer(me); if(ls){dx=ls.x;dy=ls.y} }
   if(!dx&&!dy&&tapTarget){const ddx=tapTarget.x-me.x,ddy=tapTarget.y-me.y;if(Math.hypot(ddx,ddy)<.15)tapTarget=null;else{dx=ddx;dy=ddy}}
   const busy=!$('#modal').hidden||(dock&&dock.kind!=='gather');
   me.moving=false;
@@ -1967,7 +1953,7 @@ function segment(el,options,key){ el.innerHTML=options.map(([v,l])=>`<button typ
 segment($('#segRivals'),[[5,'5'],[8,'8'],[11,'11']],'rivals');
 segment($('#segSkill'),[['apprentice','Apprentice'],['scholar','Scholar'],['master','Master']],'skill');
 segment($('#segLen'),[[5,'5 min'],[8,'8 min'],[12,'12 min']],'minutes');
-function renderEras(){ const lab=e=>`<label><input type="checkbox" value="${e.id}" ${settings.eras.includes(e.id)?'checked':''}>${esc(e.name)}<small>${TERMS.filter(t=>t[0]===e.id).length}</small></label>`; $('#eraList').innerHTML=ERAS.map(lab).join('')+`<div class="erasub">Other subjects</div>`+TOPICS.map(lab).join(''); $('#start').disabled=!settings.eras.length; $('#hostBtn').disabled=!settings.eras.length; }
+function renderEras(){ const lab=e=>`<label><input type="checkbox" value="${e.id}" ${settings.eras.includes(e.id)?'checked':''}>${esc(e.name)}<small>${TERMS.filter(t=>t[0]===e.id).length}</small></label>`; $('#eraList').innerHTML=ERAS.map(lab).join('')+(TOPICS.length?`<div class="erasub">Other subjects</div>`+TOPICS.map(lab).join(''):''); $('#start').disabled=!settings.eras.length; $('#hostBtn').disabled=!settings.eras.length; }
 $('#eraList').addEventListener('change',()=>{ settings.eras=[...$('#eraList').querySelectorAll('input:checked')].map(i=>i.value); store.set('hh-settings',settings); $('#start').disabled=!settings.eras.length; $('#hostBtn').disabled=!settings.eras.length; });
 $('#eraAll').onclick=()=>{ settings.eras=CATS.map(e=>e.id); store.set('hh-settings',settings); renderEras(); };
 $('#eraNone').onclick=()=>{ settings.eras=[]; store.set('hh-settings',settings); renderEras(); };

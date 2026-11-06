@@ -1,23 +1,23 @@
-HISTORY HEROES: putting the game online for class games
+HISTORY HEROES (CLASSROOM EDITION): putting the game online for class games
 
 Class games only work from the game's own web address. Inside Claude, the game
 can only play against the computer. Hosting it on GitHub Pages is free and takes
 about five minutes, the same way you set up the Hidden Words app.
 
-1. On github.com, make a new public repository named "history-heroes".
+1. On github.com, make a new public repository named "history-heroes-classroom".
 2. Choose "uploading an existing file". Drag in index.html from this folder,
    then click "Commit changes".
 3. Open Settings, then Pages. Under "Branch", choose "main", then "/ (root)",
    then Save.
 4. After about a minute your game is at
-   https://YOUR-USERNAME.github.io/history-heroes/
+   https://YOUR-USERNAME.github.io/history-heroes-classroom/
 
 Running a class game
 - On the projector computer, open the address and click
   "Teachers: host a class game on this screen". A 5-letter class code appears.
 - Students open the same address on their phones or laptops, pick a hero,
   type the code and tap "Join a class game".
-- Tip: https://YOUR-USERNAME.github.io/history-heroes/?join=CODE fills in the
+- Tip: https://YOUR-USERNAME.github.io/history-heroes-classroom/?join=CODE fills in the
   code for them, which is handy for a QR code.
 - Choose how many computer rivals to add, then press "Start the game".
 - The projector shows the whole map and a live leaderboard. Scroll or press
