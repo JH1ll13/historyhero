@@ -132,6 +132,31 @@ legend{padding:0 6px;font-size:.72rem;letter-spacing:.14em;text-transform:upperc
 .eras{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
 .eras label{display:flex;gap:7px;align-items:center;font-size:.85rem;color:var(--vellum);background:var(--night);border:1px solid var(--line);border-radius:7px;padding:6px 8px}
 .eras input{accent-color:var(--brass)}
+.ulabel span{flex:1;min-width:0;overflow-wrap:anywhere}
+.ucols.qa{grid-template-columns:1.7fr 1fr}
+.uedit{background:none;border:1px solid var(--line);border-radius:5px;color:var(--brass);font-size:.72rem;padding:2px 7px;margin-left:2px}
+.ubtns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;font-size:.85rem}
+.ubtns span{flex-basis:100%;color:var(--muted);font-size:.78rem}
+.ued{position:fixed;inset:0;z-index:80;background:rgba(5,10,15,.7);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px max(12px,env(safe-area-inset-right,0px)) 40px max(12px,env(safe-area-inset-left,0px))}
+.ued[hidden]{display:none}
+.ued .sheet{max-height:none;overflow:visible}
+.ued .ul{display:block;font-weight:700;font-size:.85rem;margin:12px 0 4px}
+.ued input,.ued textarea{display:block;width:100%;box-sizing:border-box;background:#FFFBF0;color:#21180C;border:1px solid #BFA678;border-radius:6px;padding:8px 10px;font:inherit;font-size:.95rem;-webkit-user-select:text;user-select:text}
+.ued label.ul input{margin-top:4px;font-weight:400}
+.useg{display:flex;flex-wrap:wrap;gap:6px}
+.useg button{border:1px solid #9C7330;background:transparent;color:#21180C;border-radius:7px;padding:7px 12px;font-weight:700;font-size:.88rem}
+.useg button[aria-pressed=true]{background:#21180C;color:var(--vellum)}
+.uhelp{font-size:.84rem;color:#5A4626;margin:8px 0}
+.urow{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid #E0D2AE}
+.urow .un{font-weight:700;color:#9C7330;width:1.6em;padding-top:9px;text-align:right;flex:none}
+.ucols{flex:1;display:grid;grid-template-columns:1fr 1.4fr;gap:6px;min-width:0}
+.uw{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.uw input{font-size:.85rem;padding:6px 8px}
+.ux{flex:none;background:none;border:none;color:#9C7330;font-size:1.4rem;line-height:1;padding:6px 4px}
+@media (max-width:560px){ .ucols,.uw{grid-template-columns:1fr} }
+.uerr{color:#B0402E;font-weight:700;font-size:.88rem;min-height:1em;margin:8px 0}
+.umore{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;padding-top:10px;border-top:1px solid #E0D2AE}
+.umore button{background:none;border:none;padding:0;color:#7A5A22;text-decoration:underline;font-size:.88rem}
 .erasub{grid-column:1/-1;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:6px}
 .eras small{color:var(--muted);margin-left:auto;font-size:.7rem}
 .go{border:0;background:var(--brass);color:#1B1408;font-family:var(--f-display);font-size:1.5rem;border-radius:10px;padding:12px 22px;align-self:flex-start}
@@ -597,6 +622,31 @@ function buildKneel(look){
   return out;
 }
 
+/* ================= TEACHER UNITS: custom questions a teacher writes =================
+   A unit is either terms & definitions (asked both ways, like the built-in eras) or
+   questions & answers (the question is always the prompt; optional wrong answers).
+   Units live in this browser. In a class game the host sends the units in play to every student. */
+const unitId=()=>'u'+Math.random().toString(36).slice(2,9);
+function cleanUnit(u){ if(!u||typeof u!=='object') return null;
+  const kind=u.kind==='qa'?'qa':'terms', clip=(v,n)=>String(v==null?'':v).replace(/\s+/g,' ').trim().slice(0,n);
+  const items=(Array.isArray(u.items)?u.items:[]).map(it=>({q:clip(it.q,300),a:clip(it.a,200),w:kind==='qa'?(Array.isArray(it.w)?it.w:[]).map(x=>clip(x,200)).filter(Boolean).slice(0,3):[]})).filter(it=>it.q&&it.a).slice(0,300);
+  return {id:/^u[a-z0-9]{3,12}$/.test(u.id)?u.id:unitId(),name:clip(u.name,40)||'My unit',kind,items}; }
+function saveUnits(){ store.set('hh-units',units); }
+let units=(store.get('hh-units',[])||[]).map(cleanUnit).filter(Boolean);
+// put a set of units into the question pool (replacing any units added before)
+function applyUnits(list){
+  for(const k of Object.keys(ERA_BY_ID)) if(ERA_BY_ID[k].custom) delete ERA_BY_ID[k];
+  TERMS.length=BASE_TERMS; CATS.length=BASE_CATS;
+  for(const u of list){ const e={id:u.id,name:u.name,years:'',region:'',landmark:'',custom:true,kind:u.kind}; CATS.push(e); ERA_BY_ID[u.id]={...e,i:CATS.length-1};
+    for(const it of u.items) TERMS.push(u.kind==='qa'?[u.id,it.q,it.a,it.w]:[u.id,it.q,it.a]); }
+}
+const BASE_TERMS=TERMS.length, BASE_CATS=CATS.length;
+applyUnits(units);
+const unitsInPlay=()=>units.filter(u=>settings.eras.includes(u.id));
+const isQA=id=>(ERA_BY_ID[id]||{}).kind==='qa';
+function qLabel(t,i,asTerm){ if(i<0) return (t[3]||[])[-i-1]||''; const o=TERMS[i]; return asTerm?o[1]:o[2]; }
+function qAsk(t,asTerm){ return isQA(t[0])?'Choose the best answer.':asTerm?'Which term matches this description?':'What does this term mean?'; }
+
 const settings=Object.assign({name:'',costume:'painter',cloth:'#D94F3D',skin:'#E3B184',hair:'#2B1B10',rivals:8,skill:'scholar',minutes:8,eras:ERAS.map(e=>e.id)},store.get('hh-settings',{}));
 { const ok=(settings.eras||[]).filter(id=>ERA_BY_ID[id]); settings.eras=ok.length||!(settings.eras||[]).length?ok:ERAS.map(e=>e.id); }
 const mastery=store.get('hh-mastery',{});   // term -> {s:seen,c:correct,m:misses}
@@ -766,13 +816,15 @@ function pickTerm(eraId){
 }
 function makeQ(eraId){
   const t=pickTerm(eraId); recent=[t[1],...recent].slice(0,10);
-  const on=new Set(settings.eras);
-  const same=shuffle(TERMS.filter(o=>o[0]===t[0]&&o[1]!==t[1]));
-  const other=shuffle(TERMS.filter(o=>o[0]!==t[0]&&on.has(o[0])));
-  const wrong=[...same.slice(0,2),...other.slice(0,1)]; for(const o of [...same.slice(2),...other.slice(1)]) if(wrong.length<3) wrong.push(o);
-  const asTerm=Math.random()<.62;
-  const opts=shuffle([t,...wrong.slice(0,3)]).map(o=>({label:asTerm?o[1]:o[2],correct:o===t,ti:TERMS.indexOf(o)}));
-  return {t,era:t[0],asTerm,prompt:asTerm?t[2]:t[1],ask:asTerm?'Which term matches this description?':'What does this term mean?',opts};
+  const on=new Set(settings.eras), qa=isQA(t[0]), asTerm=!qa&&Math.random()<.62, lab=o=>asTerm?o[1]:o[2];
+  const same=shuffle(TERMS.filter(o=>o[0]===t[0]&&o!==t));
+  const other=shuffle(TERMS.filter(o=>o[0]!==t[0]&&on.has(o[0])&&isQA(o[0])===qa));
+  const wrong=[], seen=new Set([lab(t).toLowerCase()]), add=(label,ti)=>{ const k=label.toLowerCase(); if(wrong.length<3&&label&&!seen.has(k)){ seen.add(k); wrong.push({label,ti}); } };
+  if(qa) (t[3]||[]).forEach((w,k)=>add(w,-(k+1)));
+  for(const o of [...same.slice(0,qa?3:2),...other.slice(0,qa?0:1),...same.slice(qa?3:2),...other.slice(qa?0:1)]) add(lab(o),TERMS.indexOf(o));
+  if(wrong.length<3) for(const o of shuffle(TERMS.filter(o=>on.has(o[0])))) add(o[2],TERMS.indexOf(o));
+  const opts=shuffle([{label:lab(t),correct:true,ti:TERMS.indexOf(t)},...wrong.map(w=>({...w,correct:false}))]);
+  return {t,era:t[0],asTerm,prompt:asTerm?t[2]:t[1],ask:qAsk(t,asTerm),opts};
 }
 function record(q,ok){ const k=q.t[1], m=mastery[k]||(mastery[k]={s:0,c:0,m:0}); m.s++; ok?m.c++:m.m++; store.set('hh-mastery',mastery);
   G.stats.asked++; if(ok) G.stats.right++; else G.missed.set(k,q.t); }
@@ -815,7 +867,7 @@ const cam={x:MW/2,y:MH/2,z:56};
 const keys=new Set(); let stick={x:0,y:0}, tapTarget=null, lock=null;
 addEventListener('keydown',e=>{
   if(!$('#modal').hidden){ modalKey(e); return; }
-  if(e.target.matches('input')) return;
+  if(e.target.matches('input,textarea')||!ued.hidden) return;
   const k=e.key.toLowerCase(); if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)){keys.add(k);tapTarget=null;lock=null;e.preventDefault()}
   if(dock&&/^[1-4]$/.test(e.key)){ dockPick(+e.key-1); return; }
   if(e.repeat||!G||G.over||$('#hudL').hidden) return;
@@ -1283,7 +1335,7 @@ let modalKey=()=>{};
 function openSheet(html){ if(MODE==='solo') G.paused=true; keys.clear(); stick={x:0,y:0}; knob.style.transform=''; tapTarget=null; lock=null; $('#sheet').innerHTML=html; $('#modal').hidden=false; }
 function closeSheet(){ $('#modal').hidden=true; modalKey=()=>{}; if(G&&!G.over) G.paused=false; }
 function optsHtml(q,hide=new Set()){ return `<div class="opts">${q.opts.map((o,i)=>`<button class="opt${hide.has(i)?' gone':''}" data-i="${i}" ${hide.has(i)?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o.label)}</span></button>`).join('')}</div>`; }
-function learnHtml(q){ return `<div class="learn"><b>${esc(q.t[1])}</b>: ${esc(q.t[2])}</div>`; }
+function learnHtml(q){ return isQA(q.t[0])?`<div class="learn">${esc(q.t[1])}<br><b>Answer:</b> ${esc(q.t[2])}</div>`:`<div class="learn"><b>${esc(q.t[1])}</b>: ${esc(q.t[2])}</div>`; }
 function bindOpts(onPick){ $('#sheet').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>onPick(+b.dataset.i,b))); modalKey=e=>{ const n=parseInt(e.key,10); if(n>=1&&n<=4){ const b=$('#sheet').querySelector(`.opt[data-i="${n-1}"]`); if(b&&!b.disabled) b.click(); } else if(e.key==='Enter'){ const c=$('#sheet .btn'); if(c) c.click(); } }; }
 function markOpts(q,pick){ $('#sheet').querySelectorAll('.opt').forEach((b,i)=>{ b.disabled=true; if(q.opts[i].correct) b.classList.add('right'); else if(i===pick) b.classList.add('wrong'); }); }
 
@@ -1499,10 +1551,10 @@ function netTo(h,msg){ const c=h&&NET.conns.get(h.remote); if(c&&c.open){ try{ c
 function netAll(msg){ for(const c of NET.conns.values()) if(c.open){ try{ c.send(msg) }catch(e){} } }
 function netSend(msg){ if(NET.conn&&NET.conn.open){ try{ NET.conn.send(msg) }catch(e){} } }
 function netLeave(){ try{ NET.conn&&NET.conn.close() }catch(e){} try{ NET.peer&&NET.peer.destroy() }catch(e){}
-  NET.peer=null; NET.conn=null; NET.conns.clear(); NET.players=[]; NET.started=false; if(NET.savedEras){ settings.eras=NET.savedEras; NET.savedEras=null; } MODE='solo'; }
+  NET.peer=null; NET.conn=null; NET.conns.clear(); NET.players=[]; NET.started=false; if(NET.savedEras){ settings.eras=NET.savedEras; NET.savedEras=null; } MODE='solo'; applyUnits(units); }
 const heroById=id=>G&&G.byId?G.byId[id]:null;
 const packQ=q=>({ti:TERMS.indexOf(q.t),a:q.asTerm?1:0,o:q.opts.map(o=>o.ti)});
-function unpackQ(p){ const t=TERMS[p.ti], asTerm=!!p.a; return {t,era:t[0],asTerm,prompt:asTerm?t[2]:t[1],ask:asTerm?'Which term matches this description?':'What does this term mean?',opts:p.o.map(i=>({label:asTerm?TERMS[i][1]:TERMS[i][2],correct:i===p.ti,ti:i}))}; }
+function unpackQ(p){ const t=TERMS[p.ti], asTerm=!!p.a; return {t,era:t[0],asTerm,prompt:asTerm?t[2]:t[1],ask:qAsk(t,asTerm),opts:p.o.map(i=>({label:qLabel(t,i,asTerm),correct:i===p.ti,ti:i}))}; }
 function mkHero(id,name,look,x,y,ai){ return {id,me:false,name,color:look.cloth,look,spr:buildSprite(look),face:1,moving:false,flash:0,say:null,x,y,tx:x,ty:y,
   power:20,energy:3,alive:true,immune:0,zoneT:0,regenT:0,trials:new Set(),buffs:{press:0,insight:0,shield:0,sails:0,spyglass:0,compass:0},ai}; }
 function aiBrain(){ const sk=SKILL[settings.skill]; return {acc:clamp(sk.acc+(Math.random()-.5)*.16,.3,.97),tmin:sk.t[0],tmax:sk.t[1],aggr:.75+Math.random()*.6,target:null,think:0,stuckT:0,lx:0,ly:0,cool:4+Math.random()*6}; }
@@ -1568,6 +1620,7 @@ setInterval(()=>{ if(MODE!=='host'||!NET.started||!G||G.over) return; for(const 
 function cleanName(n,id){ n=String(n||'').replace(/[<>]/g,'').trim().slice(0,14)||'Hero'; let k=n,i=2; while(NET.players.some(p=>p.name===k&&p.id!==id)) k=n.slice(0,12)+' '+(i++); return k; }
 function hostStart(){
   if(NET.started) return; NET.started=true;
+  const play=unitsInPlay(); applyUnits(play);
   const humans=NET.players.slice(), aiN=settings.netAI, seed=(Math.random()*2**31)|0, w=genWorld(seed);
   G=baseG(seed,w); paintMap(); const R=G.R;
   const zc=randomLand(R,(x,y)=>Math.abs(x-MW/2)<12&&Math.abs(y-MH/2)<9); G.zone={cx:zc.x,cy:zc.y,r0:Math.hypot(MW,MH)*.62,r:Math.hypot(MW,MH)*.62,rMin:4.5};
@@ -1583,7 +1636,7 @@ function hostStart(){
     for(let i=0;i<3;i++){ const p=randomLand(R,inR); G.scrolls.push({x:p.x,y:p.y,era:ERAS[r].id,r,t:0}); }
     for(let i=0;i<4;i++){ const p=randomLand(R,inR); G.caches.push({x:p.x,y:p.y,type:BUFF_BAG[Math.floor(R()*BUFF_BAG.length)],taken:false}); } }
   G.explored.fill(1); fogDirty=true;
-  const base={t:'start',seed,len:G.len,eras:settings.eras,zone:{cx:G.zone.cx,cy:G.zone.cy,r0:G.zone.r0,rMin:G.zone.rMin},
+  const base={t:'start',seed,len:G.len,eras:settings.eras,custom:play,zone:{cx:G.zone.cx,cy:G.zone.cy,r0:G.zone.r0,rMin:G.zone.rMin},
     heroes:G.heroes.map(h=>({id:h.id,name:h.name,look:h.look,x:h.x,y:h.y,human:!!h.human})),scrolls:G.scrolls.map(s=>[s.x,s.y,s.era,s.r]),caches:G.caches.map(c=>[c.x,c.y])};
   for(const h of G.heroes) if(h.human) netTo(h,{...base,you:h.id});
   NET.cam={x:MW/2,y:MH/2,z:0}; hudLast=''; $('#feed').innerHTML=''; showScreen('play'); $('#pad').hidden=true;
@@ -1740,7 +1793,7 @@ function hostResults(){
     ${worst.length?`<div><div class="kicker" style="margin-bottom:8px">Terms the class missed most</div><div class="review">${worst.map(([i,n])=>`<div><b>${esc(TERMS[i][1])}</b><em>missed by ${n}</em><br>${esc(TERMS[i][2])}</div>`).join('')}</div></div>`:'<p class="lede">Missed terms appear here as students’ devices report in.</p>'}
     <div class="row" style="margin-top:0"><button class="go" id="hostAgain">Back to the lobby</button><button class="linkish" id="hostQuit">Close the class game</button></div>`;
   showScreen('end');
-  $('#hostAgain').onclick=()=>{ NET.started=false; NET.players=NET.players.filter(p=>{ const c=NET.conns.get(p.id), h=G.heroes.find(x=>x.remote===p.id); return c&&c.open&&!(h&&h.away); }); showLobby(); lobbyBroadcast(); };
+  $('#hostAgain').onclick=()=>{ NET.started=false; applyUnits(units); NET.players=NET.players.filter(p=>{ const c=NET.conns.get(p.id), h=G.heroes.find(x=>x.remote===p.id); return c&&c.open&&!(h&&h.away); }); showLobby(); lobbyBroadcast(); };
   $('#hostQuit').onclick=()=>{ netAll({t:'closed'}); netLeave(); titleMatch(); };
 }
 
@@ -1796,6 +1849,7 @@ function clientRecv(m){ if(!m||typeof m!=='object') return;
 }
 function clientStart(m){
   closeDock(); $('#modal').hidden=true; cer=null;
+  applyUnits((m.custom||[]).map(cleanUnit).filter(Boolean).map((u,i)=>({...u,id:m.custom[i].id})));
   if(!NET.savedEras) NET.savedEras=settings.eras; settings.eras=m.eras&&m.eras.length?m.eras:ERAS.map(e=>e.id);
   const w=genWorld(m.seed); G=baseG(m.seed,w); G.len=m.len; paintMap();
   G.zone={cx:m.zone.cx,cy:m.zone.cy,r0:m.zone.r0,r:m.zone.r0,rMin:m.zone.rMin};
@@ -1953,10 +2007,85 @@ function segment(el,options,key){ el.innerHTML=options.map(([v,l])=>`<button typ
 segment($('#segRivals'),[[5,'5'],[8,'8'],[11,'11']],'rivals');
 segment($('#segSkill'),[['apprentice','Apprentice'],['scholar','Scholar'],['master','Master']],'skill');
 segment($('#segLen'),[[5,'5 min'],[8,'8 min'],[12,'12 min']],'minutes');
-function renderEras(){ const lab=e=>`<label><input type="checkbox" value="${e.id}" ${settings.eras.includes(e.id)?'checked':''}>${esc(e.name)}<small>${TERMS.filter(t=>t[0]===e.id).length}</small></label>`; $('#eraList').innerHTML=ERAS.map(lab).join('')+(TOPICS.length?`<div class="erasub">Other subjects</div>`+TOPICS.map(lab).join(''):''); $('#start').disabled=!settings.eras.length; $('#hostBtn').disabled=!settings.eras.length; }
+function renderEras(){ const lab=e=>`<label><input type="checkbox" value="${e.id}" ${settings.eras.includes(e.id)?'checked':''}>${esc(e.name)}<small>${TERMS.filter(t=>t[0]===e.id).length}</small></label>`; const ulab=e=>`<label class="ulabel"><input type="checkbox" value="${e.id}" ${settings.eras.includes(e.id)?'checked':''}><span>${esc(e.name)}</span><small>${TERMS.filter(t=>t[0]===e.id).length}</small><button type="button" class="uedit" data-u="${e.id}" aria-label="Edit ${esc(e.name)}">Edit</button></label>`;
+  $('#eraList').innerHTML=ERAS.map(lab).join('')+(TOPICS.length?`<div class="erasub">Other subjects</div>`+TOPICS.map(lab).join(''):'')
+    +`<div class="erasub">Teacher units</div>`+CATS.slice(BASE_CATS).map(ulab).join('')+`<div class="ubtns"><button type="button" class="linkish" id="uNew">+ Write a unit</button><button type="button" class="linkish" id="uImp">Import a unit</button><span>Tick only your units for a game on just them, or tick them with the eras to mix them in.</span></div>`; $('#start').disabled=!settings.eras.length; $('#hostBtn').disabled=!settings.eras.length; }
 $('#eraList').addEventListener('change',()=>{ settings.eras=[...$('#eraList').querySelectorAll('input:checked')].map(i=>i.value); store.set('hh-settings',settings); $('#start').disabled=!settings.eras.length; $('#hostBtn').disabled=!settings.eras.length; });
 $('#eraAll').onclick=()=>{ settings.eras=CATS.map(e=>e.id); store.set('hh-settings',settings); renderEras(); };
 $('#eraNone').onclick=()=>{ settings.eras=[]; store.set('hh-settings',settings); renderEras(); };
+/* ---------- the teacher's unit editor ---------- */
+const ued=document.createElement('div'); ued.className='ued'; ued.id='ued'; ued.hidden=true; document.body.appendChild(ued);
+let draft=null, delArm=false;
+function closeUed(){ ued.hidden=true; ued.innerHTML=''; draft=null; }
+ued.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.stopPropagation(); closeUed(); } });
+ued.addEventListener('click',e=>{ if(e.target===ued) closeUed(); });
+function rowHtml(it,i){ const qa=draft.kind==='qa', w=it.w||[];
+  return `<div class="urow" data-i="${i}"><span class="un">${i+1}</span><div class="ucols${qa?' qa':''}">
+    <input class="uq" value="${esc(it.q)}" maxlength="300" placeholder="${qa?'Question':'Term'}" aria-label="${qa?'Question':'Term'} ${i+1}">
+    <input class="ua" value="${esc(it.a)}" maxlength="200" placeholder="${qa?'Correct answer':'Definition or description'}" aria-label="${qa?'Correct answer':'Definition'} ${i+1}">
+    ${qa?`<div class="uw">${[0,1,2].map(k=>`<input class="uwi" value="${esc(w[k]||'')}" maxlength="200" placeholder="Wrong answer ${k+1} (optional)" aria-label="Wrong answer ${k+1} for question ${i+1}">`).join('')}</div>`:''}
+  </div><button class="ux" data-x="${i}" aria-label="Remove row ${i+1}">×</button></div>`; }
+function readRows(){ if(!draft) return; draft.name=$('#uName').value; draft.items=[...ued.querySelectorAll('.urow')].map(r=>({q:r.querySelector('.uq').value,a:r.querySelector('.ua').value,w:[...r.querySelectorAll('.uwi')].map(x=>x.value)})); }
+function renderRows(){ $('#uRows').innerHTML=draft.items.map(rowHtml).join(''); $('#uCount').textContent=draft.items.filter(it=>it.q.trim()&&it.a.trim()).length;
+  ued.querySelectorAll('.useg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===draft.kind));
+  $('#uHelp').innerHTML=draft.kind==='qa'
+    ?'Write a question and its correct answer. Wrong answers are optional: any you leave blank are filled with the correct answers to your other questions, so those work best when the answers are the same kind of thing (all people, all years, all places).'
+    :'Each term is asked both ways: students match the term to its description, or the description to the term. Wrong choices come from your other terms.'; }
+function openUnitEditor(u){
+  draft=u?JSON.parse(JSON.stringify(u)):{id:null,name:'',kind:'terms',items:[]}; while(draft.items.length<4) draft.items.push({q:'',a:'',w:[]}); delArm=false;
+  ued.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="uTitle"><div class="eyebrow">For teachers · custom unit</div><h2 id="uTitle">${u?'Edit your unit':'Write a unit'}</h2>
+    <label class="ul">Unit name<input id="uName" maxlength="40" value="${esc(draft.name)}" placeholder="e.g. Unit 4: The Silk Road"></label>
+    <div class="ul">Question style</div><div class="useg"><button data-k="terms">Terms & definitions</button><button data-k="qa">Questions & answers</button></div>
+    <p class="uhelp" id="uHelp"></p>
+    <div id="uRows"></div>
+    <p class="uhelp"><b id="uCount">0</b> complete. A unit needs at least 4.</p>
+    <div class="row"><button class="btn ghost" id="uAdd">+ Add a row</button><button class="btn ghost" id="uPasteT">Paste a list</button></div>
+    <div id="uPaste" hidden><p class="uhelp">One per line. Separate the parts with a tab (copy straight from a spreadsheet) or with “ | ”. Terms: <i>term | definition</i>. Questions: <i>question | correct answer | wrong | wrong | wrong</i>.</p><textarea id="uPasteBox" rows="6"></textarea><div class="row" style="margin-top:6px"><button class="btn ghost" id="uPasteGo">Add these rows</button></div></div>
+    <p class="uerr" id="uErr" aria-live="polite"></p>
+    <div class="row"><button class="btn" id="uSave">Save unit</button><button class="btn ghost" id="uCancel">Cancel</button></div>
+    ${u?`<div class="umore"><button id="uOnly">Save and play only this unit</button><button id="uShare">Share with another teacher</button><button id="uDel">Delete unit</button></div><div id="uShareBox" hidden><p class="uhelp">Send this code to another teacher. On their copy of History Hero they choose <b>Import a unit</b> and paste it in.</p><textarea id="uCode" rows="4" readonly></textarea><div class="row" style="margin-top:6px"><button class="btn ghost" id="uCopy">Copy code</button></div></div>`:''}
+  </div>`;
+  ued.hidden=false; renderRows(); $('#uName').focus();
+  ued.querySelector('.useg').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; readRows(); draft.kind=b.dataset.k; renderRows(); };
+  $('#uRows').addEventListener('click',e=>{ const x=e.target.closest('.ux'); if(!x) return; readRows(); draft.items.splice(+x.dataset.x,1); if(!draft.items.length) draft.items.push({q:'',a:'',w:[]}); renderRows(); });
+  $('#uRows').addEventListener('input',()=>{ $('#uCount').textContent=[...ued.querySelectorAll('.urow')].filter(r=>r.querySelector('.uq').value.trim()&&r.querySelector('.ua').value.trim()).length; });
+  $('#uAdd').onclick=()=>{ readRows(); draft.items.push({q:'',a:'',w:[]}); renderRows(); const r=ued.querySelectorAll('.urow .uq'); r[r.length-1].focus(); };
+  $('#uPasteT').onclick=()=>{ const p=$('#uPaste'); p.hidden=!p.hidden; if(!p.hidden) $('#uPasteBox').focus(); };
+  $('#uPasteGo').onclick=()=>{ readRows(); const rows=parsePaste($('#uPasteBox').value); if(!rows.length){ $('#uErr').textContent='Nothing to add. Put each item on its own line with a tab or “ | ” between the parts.'; return; }
+    draft.items=draft.items.filter(it=>it.q.trim()||it.a.trim()).concat(rows); $('#uPasteBox').value=''; $('#uPaste').hidden=true; $('#uErr').textContent=''; renderRows(); };
+  $('#uCancel').onclick=closeUed;
+  $('#uSave').onclick=()=>saveDraft(false);
+  if(u){ $('#uOnly').onclick=()=>saveDraft(true);
+    $('#uShare').onclick=()=>{ readRows(); const c=unitCode(cleanUnit(draft)); $('#uCode').value=c; $('#uShareBox').hidden=false; $('#uCode').select(); };
+    $('#uCopy').onclick=()=>{ const c=$('#uCode'); c.select(); let ok=false; try{ navigator.clipboard.writeText(c.value).then(()=>{$('#uCopy').textContent='Copied!'}).catch(()=>{}); ok=true; }catch(e){} try{ document.execCommand('copy'); $('#uCopy').textContent='Copied!'; }catch(e){} };
+    $('#uDel').onclick=()=>{ if(!delArm){ delArm=true; $('#uDel').textContent='Tap again to delete for good'; return; }
+      units=units.filter(x=>x.id!==u.id); saveUnits(); settings.eras=settings.eras.filter(id=>id!==u.id); store.set('hh-settings',settings); applyUnits(units); renderEras(); closeUed(); }; }
+}
+function parsePaste(txt){ const qa=draft.kind==='qa';
+  return txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{ let p=l.includes('\t')?l.split('\t'):l.split(/\s*\|\s*/);
+    if(p.length<2&&!qa){ const m=l.match(/^(.+?)\s+[—–-]\s+(.+)$/)||l.match(/^(.+?):\s+(.+)$/); if(m) p=[m[1],m[2]]; }
+    p=p.map(x=>x.trim()); return {q:p[0]||'',a:p[1]||'',w:qa?p.slice(2,5).filter(Boolean):[]}; }).filter(it=>it.q&&it.a); }
+function saveDraft(only){ readRows(); const err=$('#uErr');
+  const u=cleanUnit({...draft,id:draft.id||unitId()}); if(!draft.name.trim()){ err.textContent='Give the unit a name.'; $('#uName').focus(); return; }
+  const half=draft.items.find(it=>(it.q.trim()&&!it.a.trim())||(!it.q.trim()&&it.a.trim())); if(half){ err.textContent=`Row ${draft.items.indexOf(half)+1} is missing its ${half.q.trim()?(draft.kind==='qa'?'answer':'definition'):(draft.kind==='qa'?'question':'term')}.`; return; }
+  if(u.items.length<4){ err.textContent=`Add at least 4 complete rows (you have ${u.items.length}).`; return; }
+  const answers=new Set(u.items.map(it=>it.a.toLowerCase())); if(answers.size<Math.min(4,u.items.length)&&!u.items.every(it=>it.w.length===3)){ err.textContent='Some answers repeat. Make at least 4 of them different, or give every question 3 wrong answers.'; return; }
+  const i=units.findIndex(x=>x.id===u.id); if(i>=0) units[i]=u; else units.push(u); saveUnits(); applyUnits(units);
+  if(only) settings.eras=[u.id]; else if(i<0&&!settings.eras.includes(u.id)) settings.eras.push(u.id);
+  store.set('hh-settings',settings); renderEras(); closeUed(); }
+function unitCode(u){ return 'HH1:'+btoa(unescape(encodeURIComponent(JSON.stringify({name:u.name,kind:u.kind,items:u.items})))); }
+function readCode(c){ c=String(c||'').trim(); try{ const j=c.startsWith('HH1:')?decodeURIComponent(escape(atob(c.slice(4).replace(/\s+/g,'')))):c; return cleanUnit({...JSON.parse(j),id:null}); }catch(e){ return null; } }
+function openImport(){
+  ued.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="uiTitle"><div class="eyebrow">For teachers</div><h2 id="uiTitle">Import a unit</h2>
+    <p class="uhelp">Paste the code another teacher shared with you (it starts with <b>HH1:</b>).</p><textarea id="uImpBox" rows="5"></textarea><p class="uerr" id="uErr" aria-live="polite"></p>
+    <div class="row"><button class="btn" id="uImpGo">Import</button><button class="btn ghost" id="uCancel">Cancel</button></div></div>`;
+  ued.hidden=false; $('#uImpBox').focus(); $('#uCancel').onclick=closeUed;
+  $('#uImpGo').onclick=()=>{ const u=readCode($('#uImpBox').value); if(!u||u.items.length<4){ $('#uErr').textContent='That code didn’t work. Check that the whole code was copied.'; return; }
+    units.push(u); saveUnits(); applyUnits(units); settings.eras.push(u.id); store.set('hh-settings',settings); renderEras(); closeUed(); };
+}
+$('#eraList').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; e.preventDefault();
+  if(b.dataset.u) openUnitEditor(units.find(u=>u.id===b.dataset.u)); else if(b.id==='uNew') openUnitEditor(null); else if(b.id==='uImp') openImport(); });
+
 $('#nameIn').value=settings.name; $('#nameIn').addEventListener('input',e=>{ settings.name=e.target.value; store.set('hh-settings',settings); });
 function startGame(){ if(MODE!=='solo') netLeave(); newMatch(); G.explored.fill(0); revealAround(G.me,5); fogDirty=true; G.region=-1; hudLast=''; $('#feed').innerHTML=''; showScreen('play'); addFeed('Read scrolls to grow your power. Rivals are hunting too.'); }
 $('#start').onclick=startGame;

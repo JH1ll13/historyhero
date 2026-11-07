@@ -33,3 +33,14 @@ Notes
 - If a student's device drops out, the computer plays their hero until they
   come back.
 - Keep the projector tab open during the game. It is the referee.
+
+Teacher units (your own questions)
+- On the title screen under "Topics in play", choose "+ Write a unit". Write terms
+  and definitions, or questions with a correct answer (plus up to 3 wrong ones).
+  You can paste a list straight from a spreadsheet.
+- Tick only your units for a game on just them, or tick them with the eras to mix
+  them in.
+- Units are saved in the browser on the computer where you write them. In a class
+  game the projector sends them to every student, so students don't need them.
+- "Share with another teacher" gives a code that a colleague can paste into
+  "Import a unit".
