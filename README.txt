@@ -44,3 +44,42 @@ Teacher units (your own questions)
   game the projector sends them to every student, so students don't need them.
 - "Share with another teacher" gives a code that a colleague can paste into
   "Import a unit".
+
+Shared units (load on every device)
+- Units listed in the file units.json, next to index.html, load automatically for
+  everyone who opens the site, including on school Chromebooks that wipe their
+  data. They show up under "Teacher units" marked "Shared".
+- Shared units can only be changed by editing units.json on GitHub. Students
+  can't change or delete them. Anyone can tap "Shared" to make their own
+  editable copy.
+- To add one: write the unit in the game, choose Edit, then "Share with another
+  teacher", and send the code to Claude to add it. Or edit units.json on
+  GitHub yourself (click the file, then the pencil icon). The format is:
+
+  {
+    "units": [
+      {
+        "name": "Mesoamerica Review",
+        "kind": "terms",
+        "items": [
+          ["Tenochtitlan", "Aztec capital built on an island in Lake Texcoco"],
+          ["Chinampas", "Floating gardens the Aztecs used to farm"]
+        ]
+      },
+      {
+        "name": "Quick Quiz",
+        "kind": "qa",
+        "items": [
+          ["Who wrote the 95 Theses?", "Martin Luther", "John Calvin", "Henry VIII", "Erasmus"]
+        ]
+      }
+    ]
+  }
+
+  "terms" items are [term, definition]. "qa" items are [question, correct
+  answer, then up to 3 wrong answers]. Each unit needs at least 4 items. Keep
+  the commas and brackets exactly as shown. If the file has a mistake, the
+  shared units won't load, but the rest of the game still works.
+- The Claude artifact version can't read this file, so shared units only appear
+  on the GitHub site.
+
